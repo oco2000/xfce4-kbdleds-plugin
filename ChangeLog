@@ -7,3 +7,9 @@
 
 	* Released 0.0.4
 	  Fixed bug with missing icons.
+
+2011-10-11	Oleg Voronin <oco@newmail.ru>
+
+	* Released 0.0.5
+	  Fixed linking bug in Fedora.
+

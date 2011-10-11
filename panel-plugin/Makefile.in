@@ -55,7 +55,8 @@ am_xfce4_kbdleds_plugin_OBJECTS =  \
 xfce4_kbdleds_plugin_OBJECTS = $(am_xfce4_kbdleds_plugin_OBJECTS)
 am__DEPENDENCIES_1 =
 xfce4_kbdleds_plugin_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
 am__v_lt_0 = --silent
@@ -310,6 +311,7 @@ xfce4_kbdleds_plugin_CFLAGS = \
 xfce4_kbdleds_plugin_LDADD = \
 	$(LIBXFCE4UTIL_LIBS) \
 	$(LIBXFCE4UI_LIBS) \
+	$(LIBX11_LIBS) \
 	$(LIBXFCE4PANEL_LIBS)
 
 

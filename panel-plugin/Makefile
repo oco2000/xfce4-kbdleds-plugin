@@ -55,7 +55,8 @@ am_xfce4_kbdleds_plugin_OBJECTS =  \
 xfce4_kbdleds_plugin_OBJECTS = $(am_xfce4_kbdleds_plugin_OBJECTS)
 am__DEPENDENCIES_1 =
 xfce4_kbdleds_plugin_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
 am__v_lt_0 = --silent
@@ -202,10 +203,10 @@ OTOOL64 =
 PACKAGE = xfce4-kbdleds-plugin
 PACKAGE_BUGREPORT = http://bugzilla.xfce.org/
 PACKAGE_NAME = xfce4-kbdleds
-PACKAGE_STRING = xfce4-kbdleds 0.0.4
+PACKAGE_STRING = xfce4-kbdleds 0.0.5
 PACKAGE_TARNAME = xfce4-kbdleds-plugin
 PACKAGE_URL = 
-PACKAGE_VERSION = 0.0.4
+PACKAGE_VERSION = 0.0.5
 PATH_SEPARATOR = :
 PKG_CONFIG = /usr/bin/pkg-config
 PLATFORM_CFLAGS = 
@@ -221,7 +222,7 @@ SET_MAKE =
 SHELL = /bin/bash
 STRIP = strip
 USE_NLS = yes
-VERSION = 0.0.4
+VERSION = 0.0.5
 XGETTEXT = /usr/bin/xgettext
 XGETTEXT_ARGS = --keyword=Q_ --from-code=UTF-8
 XMKMF = 
@@ -310,6 +311,7 @@ xfce4_kbdleds_plugin_CFLAGS = \
 xfce4_kbdleds_plugin_LDADD = \
 	$(LIBXFCE4UTIL_LIBS) \
 	$(LIBXFCE4UI_LIBS) \
+	$(LIBX11_LIBS) \
 	$(LIBXFCE4PANEL_LIBS)
 
 

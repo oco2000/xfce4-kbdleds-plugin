@@ -33,6 +33,7 @@ xfce4_kbdleds_plugin_CFLAGS = \
 xfce4_kbdleds_plugin_LDADD = \
 	$(LIBXFCE4UTIL_LIBS) \
 	$(LIBXFCE4UI_LIBS) \
+	$(LIBX11_LIBS) \
 	$(LIBXFCE4PANEL_LIBS)
 
 #

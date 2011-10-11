@@ -19,7 +19,7 @@
 
 GETTEXT_PACKAGE = xfce4-kbdleds-plugin
 PACKAGE = xfce4-kbdleds-plugin
-VERSION = 0.0.4
+VERSION = 0.0.5
 
 SHELL = /bin/bash
 
