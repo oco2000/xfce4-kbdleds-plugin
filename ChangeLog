@@ -1,15 +1,17 @@
-2011-05-01	Oleg Voronin <oco@newmail.ru>
+commit c3babd5347fbb7e6d0be6f8078997f3ff378b636
+Author: OCo <oco@newmail.ru>
+Date:   Tue Oct 11 21:56:00 2011 +0300
 
-	* === Released 0.0.1 ===
-	* NEWS: Bump version.
+    Added module.xml
 
-2011-06-02	Oleg Voronin <oco@newmail.ru>
+commit 13098bd049e54ab23a5f72fd0f777bbef57f440c
+Author: OCo <oco@newmail.ru>
+Date:   Tue Oct 11 21:54:40 2011 +0300
 
-	* Released 0.0.4
-	  Fixed bug with missing icons.
+    xfce4-kbdleds-plugin-0.0.5
 
-2011-10-11	Oleg Voronin <oco@newmail.ru>
+commit c0b57c62140cba8d9144ce6cb1b5c46a19dd75cf
+Author: OCo <oco@newmail.ru>
+Date:   Tue Oct 11 17:52:20 2011 +0300
 
-	* Released 0.0.5
-	  Fixed linking bug in Fedora.
-
+    Initial commit
