@@ -1,0 +1,13 @@
+What is it?
+===========
+
+This is a keyboard leds plugin (based on sample plugin) for the Xfce panel.
+
+
+Installation
+============
+
+The file 'INSTALL' contains generic installation instructions. 
+But you must use ./configure --prefix=/usr
+!!!
+

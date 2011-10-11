@@ -1,0 +1,9 @@
+2011-05-01	Oleg Voronin <oco@newmail.ru>
+
+	* === Released 0.0.1 ===
+	* NEWS: Bump version.
+
+2011-06-02	Oleg Voronin <oco@newmail.ru>
+
+	* Released 0.0.4
+	  Fixed bug with missing icons.
