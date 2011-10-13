@@ -5,11 +5,11 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xfce4-kbdleds-plugin 0.0.1\n"
+"Project-Id-Version: xfce4-kbdleds-plugin 0.0.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-05-13 21:37+0300\n"
 "PO-Revision-Date: 2011-05-08 00:59+0300\n"
-"Last-Translator: oleg <oleg@oleg-netbook>\n"
+"Last-Translator: Oleg Voronin <oco@newmail.ru>\n"
 "Language-Team: ru <>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
