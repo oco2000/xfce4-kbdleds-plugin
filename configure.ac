@@ -15,9 +15,9 @@ dnl *** Version information ***
 dnl ***************************
 m4_define([kbdleds_version_major], [0])
 m4_define([kbdleds_version_minor], [0])
-m4_define([kbdleds_version_micro], [5])
+m4_define([kbdleds_version_micro], [6])
 m4_define([kbdleds_version_nano],  []) dnl leave this empty to have no nano version
-m4_define([kbdleds_version_build], [c0b57c6])
+m4_define([kbdleds_version_build], [b927baf])
 m4_define([kbdleds_version_tag], [])
 m4_define([kbdleds_version], [kbdleds_version_major().kbdleds_version_minor().kbdleds_version_micro()ifelse(kbdleds_version_nano(), [], [], [.kbdleds_version_nano()])ifelse(kbdleds_version_tag(), [git], [kbdleds_version_tag()-kbdleds_version_build()], [kbdleds_version_tag()])])
 

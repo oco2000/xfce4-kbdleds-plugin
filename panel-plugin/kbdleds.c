@@ -220,9 +220,13 @@ kbdleds_size_changed (XfcePanelPlugin *plugin,
 gboolean kbdleds_update_state(gpointer data) {
     int i;
     gchar *str;
+    gchar *template_on="<span background=\"#00ff00\" foreground=\"#000000\">%c</span>";
+    gchar *template_off="%c";
     gchar *tempstr[NUM_LEDS];
+    gchar *templates[NUM_LEDS];
     gchar *on_off[2]={_("OFF"),_("ON")};
     gchar *tooltip={""};
+    gchar *label_str={""};
     
     if (!xkbleds_get_state())
 // stop g_timeout
@@ -233,17 +237,23 @@ gboolean kbdleds_update_state(gpointer data) {
         str=g_strdup(short_lock_names);
         for(i = 0; i < NUM_LEDS; i++) {
             tempstr[i]=g_strdup_printf("%s : %s",lock_names[i],xkb_leds[i] ? on_off[1]:on_off[0]);
-            if (xkb_leds[i])
-                str[i]=toupper(str[i]);
-            
+            if (xkb_leds[i]) {
+//                str[i]=toupper(str[i]);
+                templates[i]=g_strdup_printf(template_on,toupper(str[i]));
+            } else
+                templates[i]=g_strdup_printf(template_off,str[i]);
         }
         tooltip=g_strdup_printf("%s\n%s\n%s",tempstr[0],tempstr[1],tempstr[2]);
-        for(i = 0; i < NUM_LEDS; i++)
+        label_str=g_strconcat(templates[0],templates[1],templates[2],NULL);
+        for(i = 0; i < NUM_LEDS; i++) {
             g_free(tempstr[i]);
-        gtk_label_set_text((GtkLabel*)kbdleds->label,str);
+            g_free(templates[i]);
+        }
+        gtk_label_set_markup((GtkLabel*)kbdleds->label,label_str);
         gtk_widget_set_tooltip_text(kbdleds->label,tooltip);  
         g_free(tooltip);
         g_free(str);
+        g_free(label_str);
     }
     return TRUE;
 }

@@ -4,10 +4,10 @@ Maximized=1
 Geometry=773x436+0+0
 
 [Project Manager]
-Shortcut=C file:///home/oleg/temp/xfce/xfce4-kbdleds-plugin/panel-plugin xfce4-kbdleds-plugin 
+Shortcut=E file:///home/oleg/temp/xfce/xfce4-kbdleds-plugin/panel-plugin xfce4-kbdleds-plugin 
 
 [File Loader]
-Files=file:///home/oleg/temp/xfce/xfce4-kbdleds-plugin/panel-plugin/xkbleds.c#29
+Files=file:///home/oleg/temp/xfce/xfce4-kbdleds-plugin/panel-plugin/xkbleds.c#29%%%file:///home/oleg/temp/xfce/xfce4-kbdleds-plugin/panel-plugin/kbdleds.c#247
 
 [Document Manager]
 bookmarks=<?xml version="1.0" encoding="UTF-8"?>\n<bookmarks/>\n
