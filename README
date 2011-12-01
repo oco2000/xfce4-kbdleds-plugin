@@ -10,4 +10,3 @@ Installation
 The file 'INSTALL' contains generic installation instructions. 
 But you must use ./configure --prefix=/usr
 !!!
-
