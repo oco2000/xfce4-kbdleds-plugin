@@ -308,10 +308,10 @@ kbdleds_construct (XfcePanelPlugin *plugin)
                     G_CALLBACK (kbdleds_configure), kbdleds);
 */
   /* show the about menu item and connect signal */
-/*  xfce_panel_plugin_menu_show_about (plugin);
+  xfce_panel_plugin_menu_show_about (plugin);
   g_signal_connect     (G_OBJECT (plugin), "about",
                     G_CALLBACK (kbdleds_about), NULL);
-*/
+
 //  openlog("xkbleds",0,LOG_USER);
   xkbleds_init();
   timeoutId = g_timeout_add(250,kbdleds_update_state,NULL);

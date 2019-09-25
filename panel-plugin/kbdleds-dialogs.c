@@ -31,7 +31,7 @@
 #include "kbdleds-dialogs.h"
 
 /* the website url */
-#define PLUGIN_WEBSITE "http://goodies.xfce.org/projects/panel-plugins/xfce4-kbdleds-plugin"
+#define PLUGIN_WEBSITE "https://github.com/oco2000/xfce4-kbdleds-plugin"
 
 
 
@@ -110,5 +110,26 @@ kbdleds_about (XfcePanelPlugin *plugin)
 {
   /* about dialog code. you can use the GtkAboutDialog
    * or the XfceAboutInfo widget */
-//  GtkAboutDialog(
+  GdkPixbuf *icon;
+
+  const gchar *auth[] =
+    {
+      "OCo <oco2000@gmail.com>",
+      NULL
+    };
+
+  icon = xfce_panel_pixbuf_from_source ("kbdleds-plugin", NULL, 32);
+  gtk_show_about_dialog (NULL,
+                         "logo",         icon,
+                         "license",      xfce_get_license_text (XFCE_LICENSE_TEXT_GPL),
+                         "version",      PACKAGE_VERSION,
+                         "program-name", PACKAGE_NAME,
+                         "comments",     _("Kbdleds Plugin"),
+                         "website",      PLUGIN_WEBSITE,
+                         "copyright",    "Copyright \xc2\xa9 2011-2019 OCo\n",
+                         "authors",      auth,
+                         NULL);
+
+  if (icon)
+    g_object_unref (G_OBJECT (icon));
 }
