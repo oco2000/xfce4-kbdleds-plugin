@@ -1,6 +1,6 @@
 /*  xfce4-kbdleds-plugin - panel plugin for keyboard LEDs
  *
- *  Copyright (c) 2011 Oleg Voronin <oco@newmail.ru>
+ *  Copyright (c) 2011-2019 OCo <oco2000@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -227,7 +227,7 @@ gboolean kbdleds_update_state(gpointer data) {
     gchar *on_off[2]={_("OFF"),_("ON")};
     gchar *tooltip={""};
     gchar *label_str={""};
-    
+
     if (!xkbleds_get_state())
 // stop g_timeout
         return FALSE;
@@ -250,7 +250,7 @@ gboolean kbdleds_update_state(gpointer data) {
             g_free(templates[i]);
         }
         gtk_label_set_markup((GtkLabel*)kbdleds->label,label_str);
-        gtk_widget_set_tooltip_text(kbdleds->label,tooltip);  
+        gtk_widget_set_tooltip_text(kbdleds->label,tooltip);
         g_free(tooltip);
         g_free(str);
         g_free(label_str);

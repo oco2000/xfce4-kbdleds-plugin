@@ -1,6 +1,6 @@
 /*  xfce4-kbdleds-plugin - panel plugin for keyboard LEDs
  *
- *  Copyright (c) 2011 Oleg Voronin <oco@newmail.ru>
+ *  Copyright (c) 2011-2019 OCo <oco2000@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ int xkbleds_init()
   char *ind_name = NULL;
   int j, mask;
   int idx[NUM_LEDS];/* NUM, CAPS, SCROLL: indicator index, for XKB */
-    
+
 // open X display
   d = XOpenDisplay(NULL);
   if (!d)
@@ -89,8 +89,8 @@ int xkbleds_init()
       ind_name = XGetAtomName(d, xkb->names->indicators[i]);
     for(j = 0; j < NUM_LEDS; j++){
       if(ind_name && !strcmp(lock_names[j], ind_name)){
-	     if(XkbGetNamedIndicator(d, xkb->names->indicators[i], &mask,
-				NULL, NULL, NULL) == True){
+       if(XkbGetNamedIndicator(d, xkb->names->indicators[i], &mask,
+        NULL, NULL, NULL) == True){
             masks[j] = 1 << mask;
             idx[j] = mask;
          } else {

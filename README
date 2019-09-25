@@ -7,6 +7,16 @@ This is a keyboard leds plugin (based on sample plugin) for the Xfce panel.
 Installation
 ============
 
-The file 'INSTALL' contains generic installation instructions. 
-But you must use ./configure --prefix=/usr
-!!!
+You should have
+- xfce4-dev-tools
+- libgtk2.0-dev
+- libxfce4ui-1-dev
+- xfce4-panel-dev
+
+Then run
+./autogen.sh
+./configure --prefix=/usr
+sudo make install
+
+Enjoy!
+
