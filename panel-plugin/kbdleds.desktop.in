@@ -4,5 +4,8 @@ Encoding=UTF-8
 _Name=Kbdleds Plugin
 _Comment=Keyboard LEDs plugin for the Xfce panel
 Icon=kbdleds-plugin
-X-XFCE-Exec=@libexecdir@/xfce4/panel-plugins/xfce4-kbdleds-plugin
-#X-XFCE-Unique=true
+X-XFCE-Module=kbdleds
+X-XFCE-Internal=false
+X-XFCE-Unique=false
+X-XFCE-API=2.0
+

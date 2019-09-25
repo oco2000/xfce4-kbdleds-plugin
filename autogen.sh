@@ -29,5 +29,7 @@ EOF
   exit 1
 }
 
+test -d m4 || mkdir m4
+
 XDT_AUTOGEN_REQUIRED_VERSION="4.6.0" \
 exec xdt-autogen $@

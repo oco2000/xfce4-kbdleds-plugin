@@ -2,6 +2,7 @@
 # Lines that start with '#' are comments.
 # For a project mostly in C, the following would be a good set of
 # exclude patterns (uncomment them if you want to use them):
+
 *.[oa]
 *~
 *.gmo
@@ -29,8 +30,12 @@ ltmain.sh
 missing
 mkinstalldirs
 panel-plugin/.deps/*
+panel-plugin/.libs/*
 panel-plugin/kbdleds.desktop
 panel-plugin/xfce4-kbdleds-plugin
+panel-plugin/*.la
+panel-plugin/*.lo
 po/.intltool-merge-cache
 po/POTFILES
 *.anjuta
+m4

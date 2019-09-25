@@ -24,11 +24,11 @@
 #include <string.h>
 #endif
 
+#include <ctype.h>
+
 #include <gtk/gtk.h>
 #include <libxfce4util/libxfce4util.h>
 #include <libxfce4panel/xfce-panel-plugin.h>
-#include <libxfce4panel/xfce-hvbox.h>
-//#include <syslog.h>
 
 #include "kbdleds.h"
 #include "kbdleds-dialogs.h"
@@ -46,7 +46,7 @@ static void
 kbdleds_construct (XfcePanelPlugin *plugin);
 
 /* register the plugin */
-XFCE_PANEL_PLUGIN_REGISTER_EXTERNAL (kbdleds_construct);
+XFCE_PANEL_PLUGIN_REGISTER (kbdleds_construct);
 
 void
 kbdleds_save (XfcePanelPlugin *plugin,
@@ -149,7 +149,7 @@ kbdleds_new (XfcePanelPlugin *plugin)
   kbdleds->ebox = gtk_event_box_new ();
   gtk_widget_show (kbdleds->ebox);
 
-  kbdleds->hvbox = xfce_hvbox_new (orientation, FALSE, 2);
+  kbdleds->hvbox = gtk_box_new (orientation, 2);
   gtk_widget_show (kbdleds->hvbox);
   gtk_container_add (GTK_CONTAINER (kbdleds->ebox), kbdleds->hvbox);
 
@@ -194,7 +194,7 @@ kbdleds_orientation_changed (XfcePanelPlugin *plugin,
                             kbdledsPlugin    *kbdleds)
 {
   /* change the orienation of the box */
-  xfce_hvbox_set_orientation (XFCE_HVBOX (kbdleds->hvbox), orientation);
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(kbdleds->hvbox), orientation);
 }
 
 static gboolean
@@ -300,6 +300,7 @@ kbdleds_construct (XfcePanelPlugin *plugin)
 */
 //  openlog("xkbleds",0,LOG_USER);
   xkbleds_init();
+// TODO free timeout on exit
   g_timeout_add(250,kbdleds_update_state,NULL);
 
 }

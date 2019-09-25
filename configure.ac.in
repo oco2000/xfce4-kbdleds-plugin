@@ -16,6 +16,7 @@ m4_define([kbdleds_version_build], [@REVISION@])
 m4_define([kbdleds_version_tag], [])
 m4_define([kbdleds_version], [kbdleds_version_major().kbdleds_version_minor().kbdleds_version_micro()ifelse(kbdleds_version_nano(), [], [], [.kbdleds_version_nano()])ifelse(kbdleds_version_tag(), [git], [kbdleds_version_tag()-kbdleds_version_build()], [kbdleds_version_tag()])])
 
+AC_CONFIG_MACRO_DIR([m4])
 dnl ***************************
 dnl *** Initialize autoconf ***
 dnl ***************************
@@ -28,26 +29,25 @@ AC_REVISION([xfce4_panel_version_build])
 dnl ***************************
 dnl *** Initialize automake ***
 dnl ***************************
-AM_INIT_AUTOMAKE([1.8 no-dist-gzip dist-bzip2 tar-ustar])
-AM_CONFIG_HEADER([config.h])
+AM_INIT_AUTOMAKE([1.11 no-dist-gzip dist-bzip2 tar-ustar])
+AC_CONFIG_HEADER([config.h])
 AM_MAINTAINER_MODE()
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
-dnl *******************************
-dnl *** Check for UNIX variants ***
-dnl *******************************
-AC_AIX()
-AC_ISC_POSIX()
+dnl **************************
+dnl *** Initialize libtool ***
+dnl **************************
+LT_PREREQ([2.2.6])
+LT_INIT([disable-static])
 
 dnl ********************************
 dnl *** Check for basic programs ***
 dnl ********************************
 AC_PROG_CC()
-AM_PROG_CC_C_O()
+AC_PROG_CC_C_O()
 AC_PROG_LD()
 AC_PROG_INSTALL()
-AC_PROG_INTLTOOL()
-AC_PROG_LIBTOOL()
+IT_PROG_INTLTOOL([0.35.0])
 
 dnl **********************************
 dnl *** Check for standard headers ***
@@ -71,15 +71,13 @@ XDT_CHECK_LIBX11_REQUIRE()
 dnl ***********************************
 dnl *** Check for required packages ***
 dnl ***********************************
-dnl XDT_CHECK_PACKAGE([GTK], [gtk+-2.0], [2.6.0])
-dnl XDT_CHECK_PACKAGE([LIBXFCE4UTIL], [libxfce4util-1.0], [4.3.90])
-dnl XDT_CHECK_PACKAGE([LIBXFCEGUI4], [libxfcegui4-1.0], [4.3.90])
-dnl XDT_CHECK_PACKAGE([LIBXFCE4PANEL], [libxfce4panel-1.0], [4.3.90])
 
-XDT_CHECK_PACKAGE([GTK], [gtk+-2.0], [2.20.0])
-XDT_CHECK_PACKAGE([LIBXFCE4UI], [libxfce4ui-1], [4.6.0])
-XDT_CHECK_PACKAGE([LIBXFCE4UTIL], [libxfce4util-1.0], [4.6.0])
-XDT_CHECK_PACKAGE([LIBXFCE4PANEL], [libxfce4panel-1.0], [4.6.0])
+dnl XDT_CHECK_PACKAGE([GTK], [gtk+-2.0], [2.20.0])
+dnl XDT_CHECK_PACKAGE([LIBXFCE4UI], [libxfce4ui-1], [4.6.0])
+dnl XDT_CHECK_PACKAGE([LIBXFCE4UTIL], [libxfce4util-1.0], [4.6.0])
+dnl XDT_CHECK_PACKAGE([LIBXFCE4PANEL], [libxfce4panel-1.0], [4.6.0])
+XDT_CHECK_PACKAGE([LIBXFCE4UI], [libxfce4ui-2], [4.12.0])
+XDT_CHECK_PACKAGE([LIBXFCE4PANEL], [libxfce4panel-2.0], [4.12.0])
 
 dnl ***********************************
 dnl *** Check for debugging support ***
