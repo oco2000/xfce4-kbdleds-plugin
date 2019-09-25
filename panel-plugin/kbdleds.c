@@ -48,6 +48,8 @@ kbdleds_construct (XfcePanelPlugin *plugin);
 /* register the plugin */
 XFCE_PANEL_PLUGIN_REGISTER (kbdleds_construct);
 
+guint timeoutId;
+
 void
 kbdleds_save (XfcePanelPlugin *plugin,
              kbdledsPlugin    *kbdleds)
@@ -186,6 +188,11 @@ kbdleds_free (XfcePanelPlugin *plugin,
 
   /* free the plugin structure */
   panel_slice_free (kbdledsPlugin, kbdleds);
+
+  /* free the timeout */
+  if (timeoutId) {
+    g_source_remove(timeoutId);
+  }
 }
 
 static void
@@ -218,44 +225,51 @@ kbdleds_size_changed (XfcePanelPlugin *plugin,
 }
 
 gboolean kbdleds_update_state(gpointer data) {
-    int i;
-    gchar *str;
-    gchar *template_on="<span background=\"#00ff00\" foreground=\"#000000\">%c</span>";
-    gchar *template_off="%c";
-    gchar *tempstr[NUM_LEDS];
-    gchar *templates[NUM_LEDS];
-    gchar *on_off[2]={_("OFF"),_("ON")};
-    gchar *tooltip={""};
-    gchar *label_str={""};
+  int i;
+  gchar *str;
+  gchar *template_on="<span background=\"#00ff00\" foreground=\"#000000\">%c</span>";
+  gchar *template_off="%c";
+  gchar *led_labels[NUM_LEDS + 1];
+  gchar *tooltip_labels[NUM_LEDS + 1];
+  gchar *on_off[2]={_("OFF"),_("ON")};
+  gchar *tooltip_str={""};
+  gchar *label_str={""};
 
-    if (!xkbleds_get_state())
-// stop g_timeout
-        return FALSE;
+  if (!xkbleds_get_state()) {
+    // stop g_timeout
+    return FALSE;
+  }
 //    syslog(LOG_DEBUG,"%d",kbd_state);
 
-    if (xkb_state!=old_xkb_state) {
-        str=g_strdup(short_lock_names);
-        for(i = 0; i < NUM_LEDS; i++) {
-            tempstr[i]=g_strdup_printf("%s : %s",lock_names[i],xkb_leds[i] ? on_off[1]:on_off[0]);
-            if (xkb_leds[i]) {
-//                str[i]=toupper(str[i]);
-                templates[i]=g_strdup_printf(template_on,toupper(str[i]));
-            } else
-                templates[i]=g_strdup_printf(template_off,str[i]);
-        }
-        tooltip=g_strdup_printf("%s\n%s\n%s",tempstr[0],tempstr[1],tempstr[2]);
-        label_str=g_strconcat(templates[0],templates[1],templates[2],NULL);
-        for(i = 0; i < NUM_LEDS; i++) {
-            g_free(tempstr[i]);
-            g_free(templates[i]);
-        }
-        gtk_label_set_markup((GtkLabel*)kbdleds->label,label_str);
-        gtk_widget_set_tooltip_text(kbdleds->label,tooltip);
-        g_free(tooltip);
-        g_free(str);
-        g_free(label_str);
+  if (xkb_state != old_xkb_state) {
+
+    for(i = 0; i < NUM_LEDS; i++) {
+      led_labels[i] = g_strdup_printf("%s : %s", lock_names[i], xkb_leds[i] ? on_off[1] : on_off[0]);
+
+      if (xkb_leds[i]) {
+        tooltip_labels[i] = g_strdup_printf(template_on, toupper(short_lock_names[i]));
+      } else {
+        tooltip_labels[i] = g_strdup_printf(template_off, short_lock_names[i]);
+      }
     }
-    return TRUE;
+    led_labels[NUM_LEDS] = NULL;
+    tooltip_labels[NUM_LEDS] = NULL;
+
+    tooltip_str = g_strjoinv("\n", led_labels);
+    label_str = g_strjoinv(NULL, tooltip_labels);
+
+    gtk_label_set_markup((GtkLabel*)kbdleds->label, label_str);
+    gtk_widget_set_tooltip_text(kbdleds->label, tooltip_str);
+
+    for(i = 0; i < NUM_LEDS; i++) {
+      g_free(led_labels[i]);
+      g_free(tooltip_labels[i]);
+    }
+
+    g_free(tooltip_str);
+    g_free(label_str);
+  }
+  return TRUE;
 }
 
 
@@ -300,7 +314,6 @@ kbdleds_construct (XfcePanelPlugin *plugin)
 */
 //  openlog("xkbleds",0,LOG_USER);
   xkbleds_init();
-// TODO free timeout on exit
-  g_timeout_add(250,kbdleds_update_state,NULL);
+  timeoutId = g_timeout_add(250,kbdleds_update_state,NULL);
 
 }
