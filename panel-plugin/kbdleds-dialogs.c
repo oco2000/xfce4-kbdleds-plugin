@@ -33,8 +33,6 @@
 /* the website url */
 #define PLUGIN_WEBSITE "https://github.com/oco2000/xfce4-kbdleds-plugin"
 
-
-
 static void
 kbdleds_configure_response (GtkWidget    *dialog,
                            gint          response,
@@ -66,13 +64,29 @@ kbdleds_configure_response (GtkWidget    *dialog,
     }
 }
 
+static void change_foreground_color(GtkWidget *button, kbdledsPlugin *kbdleds)
+{
+  gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(button), &kbdleds->foreground_color);
+  kbdleds_save (kbdleds->plugin, kbdleds);
+  refresh();
+}
 
+static void change_background_color(GtkWidget *button, kbdledsPlugin *kbdleds)
+{
+  gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(button), &kbdleds->background_color);
+  kbdleds_save (kbdleds->plugin, kbdleds);
+  refresh();
+}
 
 void
 kbdleds_configure (XfcePanelPlugin *plugin,
                   kbdledsPlugin    *kbdleds)
 {
   GtkWidget *dialog;
+
+  GtkBox *global_vbox, *foreground_vbox, *background_vbox;
+  GtkLabel *foreground_label, *background_label;
+  GtkColorButton *foreground_button, *background_button;
 
   /* block the plugin menu */
   xfce_panel_plugin_block_menu (plugin);
@@ -95,15 +109,57 @@ kbdleds_configure (XfcePanelPlugin *plugin,
    * is closed, but the dialog is still open */
   g_object_set_data (G_OBJECT (plugin), "dialog", dialog);
 
+  global_vbox = GTK_BOX (gtk_box_new(GTK_ORIENTATION_VERTICAL, 6));
+  gtk_container_set_border_width (GTK_CONTAINER (global_vbox), 12);
+  gtk_widget_show(GTK_WIDGET (global_vbox));
+  gtk_box_pack_start(GTK_BOX (gtk_dialog_get_content_area(GTK_DIALOG(dialog))), GTK_WIDGET (global_vbox), TRUE, TRUE, 0);
+
+  /* foreground color */
+  foreground_vbox = GTK_BOX (gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12));
+  gtk_widget_show(GTK_WIDGET(foreground_vbox));
+  gtk_box_pack_start(global_vbox, GTK_WIDGET(foreground_vbox), FALSE, FALSE, 0);
+
+  foreground_label = GTK_LABEL (gtk_label_new_with_mnemonic(_("Active Foreground Color")));
+  gtk_label_set_xalign (foreground_label, 0.0f);
+  gtk_widget_set_valign(GTK_WIDGET(foreground_label), GTK_ALIGN_CENTER);
+  gtk_widget_show(GTK_WIDGET(foreground_label));
+  gtk_box_pack_start(GTK_BOX(foreground_vbox), GTK_WIDGET(foreground_label), FALSE, FALSE, 0);
+
+  foreground_button = GTK_COLOR_BUTTON (gtk_color_button_new_with_rgba(&kbdleds->foreground_color));
+  gtk_label_set_mnemonic_widget(GTK_LABEL(foreground_label), GTK_WIDGET(foreground_button));
+  gtk_widget_show(GTK_WIDGET(foreground_button));
+  gtk_box_pack_start(GTK_BOX(foreground_vbox), GTK_WIDGET(foreground_button), FALSE, FALSE, 0);
+
+  /* background color */
+  background_vbox = GTK_BOX (gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12));
+  gtk_widget_show(GTK_WIDGET(background_vbox));
+  gtk_box_pack_start(global_vbox, GTK_WIDGET(background_vbox), FALSE, FALSE, 0);
+
+  background_label = GTK_LABEL (gtk_label_new_with_mnemonic(_("Active Background Color")));
+  gtk_label_set_xalign (background_label, 0.0f);
+  gtk_widget_set_valign(GTK_WIDGET(background_label), GTK_ALIGN_CENTER);
+  gtk_widget_show(GTK_WIDGET(background_label));
+  gtk_box_pack_start(GTK_BOX(background_vbox), GTK_WIDGET(background_label), FALSE, FALSE, 0);
+
+  background_button = GTK_COLOR_BUTTON (gtk_color_button_new_with_rgba(&kbdleds->background_color));
+  gtk_label_set_mnemonic_widget(GTK_LABEL(background_label), GTK_WIDGET(background_button));
+  gtk_widget_show(GTK_WIDGET(background_button));
+  gtk_box_pack_start(GTK_BOX(background_vbox), GTK_WIDGET(background_button), FALSE, FALSE, 0);
+
+
   /* connect the reponse signal to the dialog */
   g_signal_connect (G_OBJECT (dialog), "response",
                     G_CALLBACK(kbdleds_configure_response), kbdleds);
 
+  g_signal_connect (GTK_WIDGET(foreground_button), "color-set",
+            G_CALLBACK(change_foreground_color), kbdleds);
+
+  g_signal_connect (GTK_WIDGET(background_button), "color-set",
+            G_CALLBACK(change_background_color), kbdleds);
+
   /* show the entire dialog */
   gtk_widget_show (dialog);
 }
-
-
 
 void
 kbdleds_about (XfcePanelPlugin *plugin)

@@ -9,8 +9,8 @@ dnl ***************************
 dnl *** Version information ***
 dnl ***************************
 m4_define([kbdleds_version_major], [0])
-m4_define([kbdleds_version_minor], [1])
-m4_define([kbdleds_version_micro], [2])
+m4_define([kbdleds_version_minor], [2])
+m4_define([kbdleds_version_micro], [0])
 m4_define([kbdleds_version_nano],  []) dnl leave this empty to have no nano version
 m4_define([kbdleds_version_build], [@REVISION@])
 m4_define([kbdleds_version_tag], [])
@@ -20,7 +20,7 @@ AC_CONFIG_MACRO_DIR([m4])
 dnl ***************************
 dnl *** Initialize autoconf ***
 dnl ***************************
-AC_COPYRIGHT([Copyright (c) 2011-2017 OCo])
+AC_COPYRIGHT([Copyright (c) 2011-2019 OCo])
 AC_INIT([xfce4-kbdleds], [kbdleds_version], [https://github.com/oco2000/xfce4-kbdleds-plugin], [xfce4-kbdleds-plugin])
 AC_PREREQ([2.50])
 AC_REVISION([xfce4_panel_version_build])

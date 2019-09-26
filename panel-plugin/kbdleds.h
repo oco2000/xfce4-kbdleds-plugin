@@ -33,17 +33,22 @@ typedef struct
     GtkWidget       *label;
 
     /* kbdleds settings */
-    gchar           *setting1;
-    gint             setting2;
-    gboolean         setting3;
+    GdkRGBA          foreground_color;
+    GdkRGBA          background_color;
 }
 kbdledsPlugin;
 
-
+/* default settings */
+static gchar* DEFAULT_FOREGROUND_COLOR = "#000000";
+static gchar* DEFAULT_BACKGROUND_COLOR = "#00FF00";
 
 void
 kbdleds_save (XfcePanelPlugin *plugin,
              kbdledsPlugin    *kbdleds);
+
+void show_error(gchar *message);
+
+void refresh();
 
 G_END_DECLS
 

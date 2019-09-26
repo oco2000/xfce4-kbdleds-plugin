@@ -34,11 +34,6 @@
 #include "kbdleds-dialogs.h"
 #include "xkbleds.h"
 
-/* default settings */
-#define DEFAULT_SETTING1 NULL
-#define DEFAULT_SETTING2 1
-#define DEFAULT_SETTING3 FALSE
-
 kbdledsPlugin *kbdleds;
 
 /* prototypes */
@@ -49,6 +44,18 @@ kbdleds_construct (XfcePanelPlugin *plugin);
 XFCE_PANEL_PLUGIN_REGISTER (kbdleds_construct);
 
 guint timeoutId;
+
+void show_error(gchar *message) {
+  GtkDialogFlags flags = GTK_DIALOG_DESTROY_WITH_PARENT;
+  GtkWidget *dialog = gtk_message_dialog_new (NULL,
+                                   flags,
+                                   GTK_MESSAGE_ERROR,
+                                   GTK_BUTTONS_CLOSE,
+                                   "%s",
+                                   message);
+  gtk_dialog_run (GTK_DIALOG (dialog));
+  gtk_widget_destroy (dialog);
+}
 
 void
 kbdleds_save (XfcePanelPlugin *plugin,
@@ -70,19 +77,13 @@ kbdleds_save (XfcePanelPlugin *plugin,
   rc = xfce_rc_simple_open (file, FALSE);
   g_free (file);
 
-  if (G_LIKELY (rc != NULL))
-    {
-      /* save the settings */
-      DBG(".");
-      if (kbdleds->setting1)
-        xfce_rc_write_entry    (rc, "setting1", kbdleds->setting1);
+  if (G_LIKELY (rc != NULL)) {
+    xfce_rc_write_entry (rc, "Foreground_Color", gdk_rgba_to_string(&kbdleds->foreground_color));
+    xfce_rc_write_entry (rc, "Background_Color", gdk_rgba_to_string(&kbdleds->background_color));
 
-      xfce_rc_write_int_entry  (rc, "setting2", kbdleds->setting2);
-      xfce_rc_write_bool_entry (rc, "setting3", kbdleds->setting3);
-
-      /* close the rc file */
-      xfce_rc_close (rc);
-    }
+    /* close the rc file */
+    xfce_rc_close (rc);
+  }
 }
 
 static void
@@ -95,37 +96,40 @@ kbdleds_read (kbdledsPlugin *kbdleds)
   /* get the plugin config file location */
   file = xfce_panel_plugin_save_location (kbdleds->plugin, TRUE);
 
-  if (G_LIKELY (file != NULL))
-    {
-      /* open the config file, readonly */
-      rc = xfce_rc_simple_open (file, TRUE);
+  if (G_LIKELY (file != NULL)) {
+    /* open the config file, readonly */
+    rc = xfce_rc_simple_open (file, TRUE);
+
+    /* cleanup */
+    g_free (file);
+
+    if (G_LIKELY (rc != NULL)) {
+      /* read the settings */
+      if ((value = xfce_rc_read_entry (rc, "Foreground_Color", NULL)) != NULL) {
+        gdk_rgba_parse(&kbdleds->foreground_color, value);
+      } else {
+        gdk_rgba_parse(&kbdleds->foreground_color, DEFAULT_FOREGROUND_COLOR);
+      }
+
+      if ((value = xfce_rc_read_entry (rc, "Background_Color", NULL)) != NULL) {
+        gdk_rgba_parse(&kbdleds->background_color, value);
+      } else {
+        gdk_rgba_parse(&kbdleds->background_color, DEFAULT_BACKGROUND_COLOR);
+      }
 
       /* cleanup */
-      g_free (file);
+      xfce_rc_close (rc);
 
-      if (G_LIKELY (rc != NULL))
-        {
-          /* read the settings */
-          value = xfce_rc_read_entry (rc, "setting1", DEFAULT_SETTING1);
-          kbdleds->setting1 = g_strdup (value);
-
-          kbdleds->setting2 = xfce_rc_read_int_entry (rc, "setting2", DEFAULT_SETTING2);
-          kbdleds->setting3 = xfce_rc_read_bool_entry (rc, "setting3", DEFAULT_SETTING3);
-
-          /* cleanup */
-          xfce_rc_close (rc);
-
-          /* leave the function, everything went well */
-          return;
-        }
+      /* leave the function, everything went well */
+      return;
     }
+  }
 
   /* something went wrong, apply default values */
   DBG ("Applying default settings");
 
-  kbdleds->setting1 = g_strdup (DEFAULT_SETTING1);
-  kbdleds->setting2 = DEFAULT_SETTING2;
-  kbdleds->setting3 = DEFAULT_SETTING3;
+  gdk_rgba_parse(&kbdleds->foreground_color, DEFAULT_FOREGROUND_COLOR);
+  gdk_rgba_parse(&kbdleds->background_color, DEFAULT_BACKGROUND_COLOR);
 }
 
 static kbdledsPlugin *
@@ -160,11 +164,7 @@ kbdleds_new (XfcePanelPlugin *plugin)
   gtk_widget_set_has_tooltip(kbdleds->label,TRUE);
   gtk_widget_show (kbdleds->label);
   gtk_box_pack_start (GTK_BOX (kbdleds->hvbox), kbdleds->label, FALSE, FALSE, 0);
-/*
-  label = gtk_label_new (_("Plugin"));
-  gtk_widget_show (label);
-  gtk_box_pack_start (GTK_BOX (kbdleds->hvbox), label, FALSE, FALSE, 0);
-*/
+
   return kbdleds;
 }
 
@@ -183,8 +183,8 @@ kbdleds_free (XfcePanelPlugin *plugin,
   gtk_widget_destroy (kbdleds->hvbox);
 
   /* cleanup the settings */
-  if (G_LIKELY (kbdleds->setting1 != NULL))
-    g_free (kbdleds->setting1);
+  //if (G_LIKELY (kbdleds->setting1 != NULL))
+    //g_free (kbdleds->setting1);
 
   /* free the plugin structure */
   panel_slice_free (kbdledsPlugin, kbdleds);
@@ -224,16 +224,55 @@ kbdleds_size_changed (XfcePanelPlugin *plugin,
   return TRUE;
 }
 
-gboolean kbdleds_update_state(gpointer data) {
+gchar* getHexColor(GdkRGBA rgba) {
+  return g_strdup_printf("#%02X%02X%02X", (int)(rgba.red*255), (int)(rgba.green*255), (int)(rgba.blue*255));
+}
+
+void refresh() {
   int i;
   gchar *str;
-  gchar *template_on="<span background=\"#00ff00\" foreground=\"#000000\">%c</span>";
+  gchar *template_on="<span background=\"%s\" foreground=\"%s\">%c</span>";
   gchar *template_off="%c";
   gchar *led_labels[NUM_LEDS + 1];
   gchar *tooltip_labels[NUM_LEDS + 1];
   gchar *on_off[2]={_("OFF"),_("ON")};
   gchar *tooltip_str={""};
   gchar *label_str={""};
+
+  for(i = 0; i < NUM_LEDS; i++) {
+    led_labels[i] = g_strdup_printf("%s : %s", lock_names[i], xkb_leds[i] ? on_off[1] : on_off[0]);
+
+    if (xkb_leds[i]) {
+      gchar *fColor = getHexColor(kbdleds->foreground_color);
+      gchar *bColor = getHexColor(kbdleds->background_color);
+
+      tooltip_labels[i] = g_strdup_printf(template_on, bColor, fColor, toupper(short_lock_names[i]));
+
+      g_free(bColor);
+      g_free(fColor);
+    } else {
+      tooltip_labels[i] = g_strdup_printf(template_off, short_lock_names[i]);
+    }
+  }
+  led_labels[NUM_LEDS] = NULL;
+  tooltip_labels[NUM_LEDS] = NULL;
+
+  tooltip_str = g_strjoinv("\n", led_labels);
+  label_str = g_strjoinv(NULL, tooltip_labels);
+
+  gtk_label_set_markup((GtkLabel*)kbdleds->label, label_str);
+  gtk_widget_set_tooltip_text(kbdleds->label, tooltip_str);
+
+  for(i = 0; i < NUM_LEDS; i++) {
+    g_free(led_labels[i]);
+    g_free(tooltip_labels[i]);
+  }
+
+  g_free(tooltip_str);
+  g_free(label_str);
+}
+
+gboolean kbdleds_update_state(gpointer data) {
 
   if (!xkbleds_get_state()) {
     // stop g_timeout
@@ -243,35 +282,11 @@ gboolean kbdleds_update_state(gpointer data) {
 
   if (xkb_state != old_xkb_state) {
 
-    for(i = 0; i < NUM_LEDS; i++) {
-      led_labels[i] = g_strdup_printf("%s : %s", lock_names[i], xkb_leds[i] ? on_off[1] : on_off[0]);
+    refresh();
 
-      if (xkb_leds[i]) {
-        tooltip_labels[i] = g_strdup_printf(template_on, toupper(short_lock_names[i]));
-      } else {
-        tooltip_labels[i] = g_strdup_printf(template_off, short_lock_names[i]);
-      }
-    }
-    led_labels[NUM_LEDS] = NULL;
-    tooltip_labels[NUM_LEDS] = NULL;
-
-    tooltip_str = g_strjoinv("\n", led_labels);
-    label_str = g_strjoinv(NULL, tooltip_labels);
-
-    gtk_label_set_markup((GtkLabel*)kbdleds->label, label_str);
-    gtk_widget_set_tooltip_text(kbdleds->label, tooltip_str);
-
-    for(i = 0; i < NUM_LEDS; i++) {
-      g_free(led_labels[i]);
-      g_free(tooltip_labels[i]);
-    }
-
-    g_free(tooltip_str);
-    g_free(label_str);
   }
   return TRUE;
 }
-
 
 static void
 kbdleds_construct (XfcePanelPlugin *plugin)
@@ -303,17 +318,16 @@ kbdleds_construct (XfcePanelPlugin *plugin)
                     G_CALLBACK (kbdleds_orientation_changed), kbdleds);
 
   /* show the configure menu item and connect signal */
-/*  xfce_panel_plugin_menu_show_configure (plugin);
+  xfce_panel_plugin_menu_show_configure (plugin);
   g_signal_connect (G_OBJECT (plugin), "configure-plugin",
                     G_CALLBACK (kbdleds_configure), kbdleds);
-*/
+
   /* show the about menu item and connect signal */
   xfce_panel_plugin_menu_show_about (plugin);
-  g_signal_connect     (G_OBJECT (plugin), "about",
+  g_signal_connect (G_OBJECT (plugin), "about",
                     G_CALLBACK (kbdleds_about), NULL);
 
-//  openlog("xkbleds",0,LOG_USER);
   xkbleds_init();
-  timeoutId = g_timeout_add(250,kbdleds_update_state,NULL);
+  timeoutId = g_timeout_add(250, kbdleds_update_state, NULL);
 
 }

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-25 18:19+0300\n"
+"POT-Creation-Date: 2019-09-26 15:10+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,23 +17,31 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../panel-plugin/kbdleds.c:234
+#: ../panel-plugin/kbdleds.c:238
 msgid "OFF"
 msgstr ""
 
-#: ../panel-plugin/kbdleds.c:234
+#: ../panel-plugin/kbdleds.c:238
 msgid "ON"
 msgstr ""
 
-#: ../panel-plugin/kbdleds-dialogs.c:51
+#: ../panel-plugin/kbdleds-dialogs.c:49
 #, c-format
 msgid "Unable to open the following url: %s"
 msgstr ""
 
 #. create the dialog
-#: ../panel-plugin/kbdleds-dialogs.c:81 ../panel-plugin/kbdleds-dialogs.c:127
+#: ../panel-plugin/kbdleds-dialogs.c:95 ../panel-plugin/kbdleds-dialogs.c:183
 #: ../panel-plugin/kbdleds.desktop.in.h:1
 msgid "Kbdleds Plugin"
+msgstr ""
+
+#: ../panel-plugin/kbdleds-dialogs.c:122
+msgid "Active Foreground Color"
+msgstr ""
+
+#: ../panel-plugin/kbdleds-dialogs.c:138
+msgid "Active Background Color"
 msgstr ""
 
 #: ../panel-plugin/kbdleds.desktop.in.h:2
