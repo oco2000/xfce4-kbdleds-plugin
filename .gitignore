@@ -39,3 +39,5 @@ po/.intltool-merge-cache
 po/POTFILES
 *.anjuta
 m4
+stamp-*
+po/stamp-*
