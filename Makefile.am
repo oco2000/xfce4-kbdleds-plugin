@@ -1,3 +1,8 @@
+@SET_MAKE@
+
+AUTOMAKE_OPTIONS = subdir-objects
+ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
+
 SUBDIRS =	\
 	icons	\
 	panel-plugin \
@@ -5,6 +10,9 @@ SUBDIRS =	\
 
 distclean-local:
 	rm -rf *.cache *~
+
+distuninstallcheck_listfiles =                                          \
+	find . -type f -print | grep -v ./share/icons/hicolor/icon-theme.cache
 
 rpm: dist
 	rpmbuild -ta $(PACKAGE)-$(VERSION).tar.gz
