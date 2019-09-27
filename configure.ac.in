@@ -10,7 +10,7 @@ dnl *** Version information ***
 dnl ***************************
 m4_define([kbdleds_version_major], [0])
 m4_define([kbdleds_version_minor], [2])
-m4_define([kbdleds_version_micro], [1])
+m4_define([kbdleds_version_micro], [2])
 m4_define([kbdleds_version_nano],  []) dnl leave this empty to have no nano version
 m4_define([kbdleds_version_build], [@REVISION@])
 m4_define([kbdleds_version_tag], [])

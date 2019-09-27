@@ -2,7 +2,7 @@
 
 iconsdir = $(datadir)/icons/hicolor/48x48/apps
 icons_DATA =								\
-	kbdleds-plugin.png
+	xfce4-kbdleds-plugin.png
 
 EXTRA_DIST =								\
 	$(icons_DATA)
