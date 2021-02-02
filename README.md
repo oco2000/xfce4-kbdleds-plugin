@@ -21,4 +21,9 @@ Then run
 sudo make install
 ```
 
+On some distros you need to specify plugin directories by yourself like this
+```
+./configure --prefix=/usr --datarootdir=/usr/share --libdir=/usr/lib/x86_64-linux-gnu
+```
+
 Enjoy!
