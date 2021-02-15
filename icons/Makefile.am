@@ -1,6 +1,7 @@
 # $Id$
 
 SUBDIRS =								\
+	32x32								\
 	48x48								\
 	scalable
 
