@@ -28,7 +28,7 @@
 
 #include <gtk/gtk.h>
 #include <libxfce4util/libxfce4util.h>
-#include <libxfce4panel/xfce-panel-plugin.h>
+#include <libxfce4panel/libxfce4panel.h>
 
 #include "kbdleds.h"
 #include "kbdleds-dialogs.h"
@@ -140,7 +140,7 @@ kbdleds_new (XfcePanelPlugin *plugin)
   GtkWidget      *label;
 
   /* allocate memory for the plugin structure */
-  kbdleds = panel_slice_new0 (kbdledsPlugin);
+  kbdleds = g_slice_new0 (kbdledsPlugin);
 
   /* pointer to plugin */
   kbdleds->plugin = plugin;
@@ -187,7 +187,7 @@ kbdleds_free (XfcePanelPlugin *plugin,
     //g_free (kbdleds->setting1);
 
   /* free the plugin structure */
-  panel_slice_free (kbdledsPlugin, kbdleds);
+  g_slice_free (kbdledsPlugin, kbdleds);
 
   /* free the timeout */
   if (timeoutId) {

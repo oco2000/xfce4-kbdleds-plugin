@@ -25,7 +25,7 @@
 #include <gtk/gtk.h>
 
 #include <libxfce4ui/libxfce4ui.h>
-#include <libxfce4panel/xfce-panel-plugin.h>
+#include <libxfce4panel/libxfce4panel.h>
 
 #include "kbdleds.h"
 #include "kbdleds-dialogs.h"
