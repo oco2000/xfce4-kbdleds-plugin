@@ -26,4 +26,11 @@ On some distros you need to specify plugin directories by yourself like this
 ./configure --prefix=/usr --libdir=/usr/lib/x86_64-linux-gnu
 ```
 
+If ScrollLock key does not work, you can enable it with this command
+```
+xmodmap -e 'add mod3 = Scroll_Lock'
+```
+
+[Source](https://askubuntu.com/questions/764405/scroll-lock-does-not-work)
+
 Enjoy!
