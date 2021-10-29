@@ -30,7 +30,8 @@ extern char short_lock_names[NUM_LEDS];
 extern char *lock_names[NUM_LEDS];
 
 int xkbleds_init();
-gboolean xkbleds_get_state();
+void xkbleds_finish();
+void refresh();
 
 G_END_DECLS
 

@@ -21,6 +21,8 @@
 #include <X11/XKBlib.h>
 #include <X11/keysym.h>
 #include <glib.h>
+#include <gtk/gtk.h>
+#include <gdk/gdkx.h>
 
 #include <xkbleds.h>
 
@@ -28,7 +30,6 @@ int xkb_leds[NUM_LEDS] = {0,0,0};
 int xkb_state = -1;
 int old_xkb_state = 0;
 
-Display *d;
 unsigned int states = 0, old_states = 0;
 int key_syms[NUM_LEDS] = {XK_Caps_Lock, XK_Num_Lock, XK_Scroll_Lock};
 char *lock_names[NUM_LEDS] = {"Caps Lock", "Num Lock", "Scroll Lock"};
@@ -37,25 +38,42 @@ char short_lock_names[NUM_LEDS] = "cns";
 int i;
 int masks[NUM_LEDS]; /* NUM, CAPS, SCROLL: indicator mask, for XKB*/
 
-// TRUE - success
-gboolean xkbleds_get_state() {
-  d = XOpenDisplay(NULL);
-  if (!d) {
-    return FALSE;
-  }
+void xkbleds_get_initial_state(Display *d) {
 
   if (XkbGetIndicatorState(d, XkbUseCoreKbd, &states) != Success) {
-    XCloseDisplay(d);
-    return FALSE;
+    return;
   }
 
-  XCloseDisplay(d);
   old_xkb_state = xkb_state;
   xkb_state = states;
   for(i = 0; i < NUM_LEDS; i++) {
     xkb_leds[i]=((states & masks[i]) != 0);
   }
-  return TRUE;
+  refresh();
+}
+
+static int kbdEventBase;
+
+GdkFilterReturn kbd_msg_filter_func(GdkXEvent *xevent, GdkEvent *event, gpointer data)
+{
+    XEvent *xev = (GdkXEvent *)xevent;
+    if (xev->type == kbdEventBase + XkbEventCode)
+    {
+        XkbAnyEvent *kev = (XkbAnyEvent *)xev;
+        if (kev->xkb_type == XkbIndicatorStateNotify)
+        {
+            XkbIndicatorNotifyEvent *knev = (XkbIndicatorNotifyEvent*)kev;
+            old_xkb_state = xkb_state;
+            xkb_state = knev->state;
+            if (xkb_state != old_xkb_state) {
+                for(i = 0; i < NUM_LEDS; i++) {
+                    xkb_leds[i]=((xkb_state & masks[i]) != 0);
+                }
+                refresh();
+            }
+        }
+    }
+    return GDK_FILTER_CONTINUE;
 }
 
 // 0 - Success
@@ -66,12 +84,25 @@ int xkbleds_init()
   char *ind_name = NULL;
   int j, mask;
   int idx[NUM_LEDS];/* NUM, CAPS, SCROLL: indicator index, for XKB */
+  GdkDisplay *disp;
+  Display *d;
+  int opcode = 0, errorBase = 0, major = XkbMajorVersion, minor = XkbMinorVersion;
 
 // open X display
-  d = XOpenDisplay(NULL);
+
+  disp = gdk_display_get_default();
+  if (!disp) {
+      return 1;
+  }
+  d = gdk_x11_display_get_xdisplay(disp);
   if (!d) {
     return 1;
   }
+
+  if (!XkbQueryExtension(d, &opcode, &kbdEventBase, &errorBase, &major, &minor)) {
+    return 1;
+  }
+
 // get keycodes
   for (i = 0; i < NUM_LEDS; i++) {
     keys[i] = XKeysymToKeycode(d, key_syms[i]);
@@ -79,13 +110,11 @@ int xkbleds_init()
 // get the keyboard
   xkb = XkbAllocKeyboard();
   if (!xkb) {
-    XCloseDisplay(d);
     return 1;
   }
 
   if (XkbGetNames(d, XkbIndicatorNamesMask, xkb) != Success){
     XkbFreeKeyboard(xkb, 0, True);
-    XCloseDisplay(d);
     return 1;
   }
 // get masks and indexes of indicators
@@ -100,7 +129,6 @@ int xkbleds_init()
           idx[j] = mask;
         } else {
           XkbFreeKeyboard(xkb, 0, True);
-          XCloseDisplay(d);
           return 1;
         }
       }
@@ -112,6 +140,14 @@ int xkbleds_init()
   }
 // cleanup
   XkbFreeKeyboard(xkb, 0, True);
-  XCloseDisplay(d);
+// ask for indicator changes
+  XkbSelectEvents(d, XkbUseCoreKbd, XkbIndicatorStateNotifyMask, XkbIndicatorStateNotifyMask);
+  gdk_window_add_filter(NULL, kbd_msg_filter_func, NULL);
+  xkbleds_get_initial_state(d);
   return 0;
+}
+
+void xkbleds_finish()
+{
+  gdk_window_remove_filter(NULL, kbd_msg_filter_func, NULL);
 }
