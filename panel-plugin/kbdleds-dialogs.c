@@ -1,6 +1,6 @@
 /*  xfce4-kbdleds-plugin - panel plugin for keyboard LEDs
  *
- *  Copyright (c) 2011-2019 OCo <oco2000@gmail.com>
+ *  Copyright (c) 2011-2021 OCo <oco2000@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -182,7 +182,7 @@ kbdleds_about (XfcePanelPlugin *plugin)
                          "program-name", PACKAGE_NAME,
                          "comments",     _("Kbdleds Plugin"),
                          "website",      PLUGIN_WEBSITE,
-                         "copyright",    "Copyright \xc2\xa9 2011-2019 OCo\n",
+                         "copyright",    "Copyright \xc2\xa9 2011-2021 OCo\n",
                          "authors",      auth,
                          NULL);
 

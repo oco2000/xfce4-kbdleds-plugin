@@ -1,8 +1,7 @@
 # Ukrainian translations for xfce4-kbdleds-plugin package.
 # Copyright (C) 2011 THE xfce4-kbdleds-plugin'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the xfce4-kbdleds-plugin package.
-# oleg <oleg@oleg-netbook>, 2011.
-# Oleg Voronin <oco@oco.org.ua>, 2019.
+# OCo <oco2000@gmail.com>, 2019.
 #
 msgid ""
 msgstr ""
