@@ -29,6 +29,7 @@
 #include <gtk/gtk.h>
 #include <libxfce4util/libxfce4util.h>
 #include <libxfce4panel/libxfce4panel.h>
+#include <X11/XKBlib.h>
 
 #include "kbdleds.h"
 #include "kbdleds-dialogs.h"
@@ -42,8 +43,6 @@ kbdleds_construct (XfcePanelPlugin *plugin);
 
 /* register the plugin */
 XFCE_PANEL_PLUGIN_REGISTER (kbdleds_construct);
-
-guint timeoutId;
 
 void show_error(gchar *message) {
   GtkDialogFlags flags = GTK_DIALOG_DESTROY_WITH_PARENT;
@@ -186,13 +185,12 @@ kbdleds_free (XfcePanelPlugin *plugin,
   //if (G_LIKELY (kbdleds->setting1 != NULL))
     //g_free (kbdleds->setting1);
 
+  /* remove the callbacks */
+  xkbleds_finish();
+
   /* free the plugin structure */
   g_slice_free (kbdledsPlugin, kbdleds);
 
-  /* free the timeout */
-  if (timeoutId) {
-    g_source_remove(timeoutId);
-  }
 }
 
 static void
@@ -272,22 +270,6 @@ void refresh() {
   g_free(label_str);
 }
 
-gboolean kbdleds_update_state(gpointer data) {
-
-  if (!xkbleds_get_state()) {
-    // stop g_timeout
-    return FALSE;
-  }
-//    syslog(LOG_DEBUG,"%d",kbd_state);
-
-  if (xkb_state != old_xkb_state) {
-
-    refresh();
-
-  }
-  return TRUE;
-}
-
 static void
 kbdleds_construct (XfcePanelPlugin *plugin)
 {
@@ -328,6 +310,4 @@ kbdleds_construct (XfcePanelPlugin *plugin)
                     G_CALLBACK (kbdleds_about), NULL);
 
   xkbleds_init();
-  timeoutId = g_timeout_add(250, kbdleds_update_state, NULL);
-
 }
