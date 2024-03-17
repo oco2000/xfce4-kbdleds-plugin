@@ -22,6 +22,7 @@ libkbdleds_la_SOURCES = \
 	kbdleds-dialogs.h
 
 libkbdleds_la_CFLAGS = \
+	$(LIBX11_CFLAGS) \
 	$(LIBXFCE4UTIL_CFLAGS) \
 	$(LIBXFCE4UI_CFLAGS) \
 	$(LIBXFCE4PANEL_CFLAGS) \
@@ -35,6 +36,7 @@ libkbdleds_la_LDFLAGS = \
        $(PLATFORM_LDFLAGS)
 
 libkbdleds_la_LIBADD = \
+	$(LIBX11_LIBS) \
 	$(LIBXFCE4UTIL_LIBS) \
 	$(LIBXFCE4UI_LIBS) \
 	$(LIBXFCE4PANEL_LIBS)
