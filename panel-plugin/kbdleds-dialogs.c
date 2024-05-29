@@ -33,6 +33,10 @@
 /* the website url */
 #define PLUGIN_WEBSITE "https://github.com/oco2000/xfce4-kbdleds-plugin"
 
+/* prototypes */
+gboolean all_disabled(KbdledsPlugin *kbdleds);
+void check_disabled(KbdledsPlugin *kbdleds, GtkWidget *check_button);
+
 static void
 kbdleds_configure_response (GtkWidget    *dialog,
                            gint          response,
@@ -78,6 +82,37 @@ static void change_background_color(GtkWidget *button, KbdledsPlugin *kbdleds)
   refresh();
 }
 
+gboolean all_disabled(KbdledsPlugin *kbdleds) {
+  return !kbdleds->show_caps && !kbdleds->show_num && !kbdleds->show_scroll;
+}
+
+void check_disabled(KbdledsPlugin *kbdleds, GtkWidget *check_button) {
+  if (!all_disabled(kbdleds)) {
+    kbdleds_save (kbdleds->plugin, kbdleds);
+    refresh();
+  } else {
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button), TRUE);
+  }
+}
+
+static void change_visibility_caps(GtkWidget *check_button, KbdledsPlugin *kbdleds)
+{
+  kbdleds->show_caps = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_button));
+  check_disabled(kbdleds, check_button);
+}
+
+static void change_visibility_num(GtkWidget *check_button, KbdledsPlugin *kbdleds)
+{
+  kbdleds->show_num = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_button));
+  check_disabled(kbdleds, check_button);
+}
+
+static void change_visibility_scroll(GtkWidget *check_button, KbdledsPlugin *kbdleds)
+{
+  kbdleds->show_scroll = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_button));
+  check_disabled(kbdleds, check_button);
+}
+
 void
 kbdleds_configure (XfcePanelPlugin *plugin,
                   KbdledsPlugin    *kbdleds)
@@ -87,6 +122,8 @@ kbdleds_configure (XfcePanelPlugin *plugin,
   GtkBox *global_vbox, *foreground_vbox, *background_vbox;
   GtkLabel *foreground_label, *background_label;
   GtkColorButton *foreground_button, *background_button;
+  GtkCheckButton *toggle_caps, *toggle_num, *toggle_scroll;
+  GtkWidget *separator;
 
   /* block the plugin menu */
   xfce_panel_plugin_block_menu (plugin);
@@ -95,9 +132,11 @@ kbdleds_configure (XfcePanelPlugin *plugin,
   dialog = xfce_titled_dialog_new_with_buttons (_("Kbdleds Plugin"),
                                                 GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (plugin))),
                                                 GTK_DIALOG_DESTROY_WITH_PARENT,
-                                                "gtk-help", GTK_RESPONSE_HELP,
-                                                "gtk-close", GTK_RESPONSE_OK,
                                                 NULL);
+
+  /* add buttons */
+  gtk_dialog_add_button(GTK_DIALOG(dialog), _("Help"), GTK_RESPONSE_HELP);
+  gtk_dialog_add_button(GTK_DIALOG(dialog), _("Close"), GTK_RESPONSE_OK);
 
   /* center dialog on the screen */
   gtk_window_set_position (GTK_WINDOW (dialog), GTK_WIN_POS_CENTER);
@@ -146,6 +185,26 @@ kbdleds_configure (XfcePanelPlugin *plugin,
   gtk_widget_show(GTK_WIDGET(background_button));
   gtk_box_pack_start(GTK_BOX(background_vbox), GTK_WIDGET(background_button), FALSE, FALSE, 0);
 
+  /* Separator */
+  separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
+  gtk_widget_show(separator);
+  gtk_container_add(GTK_CONTAINER (global_vbox), separator);
+
+  /* Visibility toggle buttons */
+  toggle_caps = GTK_CHECK_BUTTON(gtk_check_button_new_with_label (_("Show Caps Lock indicator")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(toggle_caps), kbdleds->show_caps);
+  gtk_widget_show(GTK_WIDGET(toggle_caps));
+  gtk_container_add (GTK_CONTAINER (global_vbox), GTK_WIDGET(toggle_caps));
+
+  toggle_num = GTK_CHECK_BUTTON(gtk_check_button_new_with_label (_("Show Num Lock indicator")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(toggle_num), kbdleds->show_num);
+  gtk_widget_show(GTK_WIDGET(toggle_num));
+  gtk_container_add (GTK_CONTAINER (global_vbox), GTK_WIDGET(toggle_num));
+
+  toggle_scroll = GTK_CHECK_BUTTON(gtk_check_button_new_with_label (_("Show Scroll Lock indicator")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(toggle_scroll), kbdleds->show_scroll);
+  gtk_widget_show(GTK_WIDGET(toggle_scroll));
+  gtk_container_add (GTK_CONTAINER (global_vbox), GTK_WIDGET(toggle_scroll));
 
   /* connect the reponse signal to the dialog */
   g_signal_connect (G_OBJECT (dialog), "response",
@@ -157,6 +216,14 @@ kbdleds_configure (XfcePanelPlugin *plugin,
   g_signal_connect (GTK_WIDGET(background_button), "color-set",
             G_CALLBACK(change_background_color), kbdleds);
 
+  g_signal_connect (GTK_WIDGET(toggle_caps), "toggled",
+                    G_CALLBACK (change_visibility_caps), kbdleds);
+
+  g_signal_connect (GTK_WIDGET(toggle_num), "toggled",
+                    G_CALLBACK (change_visibility_num), kbdleds);
+
+  g_signal_connect (GTK_WIDGET(toggle_scroll), "toggled",
+                    G_CALLBACK (change_visibility_scroll), kbdleds);
   /* show the entire dialog */
   gtk_widget_show (dialog);
 }

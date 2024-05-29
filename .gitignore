@@ -41,6 +41,8 @@ po/POTFILES
 po/Makefile.in.in
 po/stamp-*
 po/*.lock
+po/*.pot
+po/*.mo
 *.anjuta
 m4
 stamp-*

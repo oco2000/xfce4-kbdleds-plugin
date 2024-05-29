@@ -40,6 +40,9 @@ typedef struct
     /* kbdleds settings */
     GdkRGBA          foreground_color;
     GdkRGBA          background_color;
+    gboolean         show_caps;
+    gboolean         show_num;
+    gboolean         show_scroll;
 }
 KbdledsPlugin;
 

@@ -60,8 +60,11 @@ kbdleds_save (XfcePanelPlugin *plugin,
   g_free (file);
 
   if (G_LIKELY (rc != NULL)) {
-    xfce_rc_write_entry (rc, "Foreground_Color", gdk_rgba_to_string(&kbdleds->foreground_color));
-    xfce_rc_write_entry (rc, "Background_Color", gdk_rgba_to_string(&kbdleds->background_color));
+    xfce_rc_write_entry(rc, "Foreground_Color", gdk_rgba_to_string(&kbdleds->foreground_color));
+    xfce_rc_write_entry(rc, "Background_Color", gdk_rgba_to_string(&kbdleds->background_color));
+    xfce_rc_write_bool_entry(rc, "Show_Caps", kbdleds->show_caps);
+    xfce_rc_write_bool_entry(rc, "Show_Num", kbdleds->show_num);
+    xfce_rc_write_bool_entry(rc, "Show_Scroll", kbdleds->show_scroll);
 
     /* close the rc file */
     xfce_rc_close (rc);
@@ -99,6 +102,10 @@ kbdleds_read (KbdledsPlugin *kbdleds)
         gdk_rgba_parse(&kbdleds->background_color, DEFAULT_BACKGROUND_COLOR);
       }
 
+      kbdleds->show_caps = xfce_rc_read_bool_entry(rc, "Show_Caps", TRUE);
+      kbdleds->show_num = xfce_rc_read_bool_entry(rc, "Show_Num", TRUE);
+      kbdleds->show_scroll = xfce_rc_read_bool_entry(rc, "Show_Scroll", TRUE);
+
       /* cleanup */
       xfce_rc_close (rc);
 
@@ -112,6 +119,9 @@ kbdleds_read (KbdledsPlugin *kbdleds)
 
   gdk_rgba_parse(&kbdleds->foreground_color, DEFAULT_FOREGROUND_COLOR);
   gdk_rgba_parse(&kbdleds->background_color, DEFAULT_BACKGROUND_COLOR);
+  kbdleds->show_caps = TRUE;
+  kbdleds->show_num = TRUE;
+  kbdleds->show_scroll = TRUE;
 }
 
 static KbdledsPlugin *
@@ -214,41 +224,47 @@ void refresh(void) {
   gchar *template_off="%c";
   gchar *led_labels[NUM_LEDS + 1];
   gchar *tooltip_labels[NUM_LEDS + 1];
+  int tooltip_count = 0;
   gchar *on_off[2]={_("OFF"),_("ON")};
   gchar *tooltip_str={""};
   gchar *label_str={""};
+  gchar *fColor = getHexColor(kbdledsplugin->foreground_color);
+  gchar *bColor = getHexColor(kbdledsplugin->background_color);
+  gboolean visible[NUM_LEDS] = {kbdledsplugin->show_caps, kbdledsplugin->show_num, kbdledsplugin->show_scroll};
 
   for(i = 0; i < NUM_LEDS; i++) {
-    led_labels[i] = g_strdup_printf("%s : %s", lock_names[i], xkb_leds[i] ? on_off[1] : on_off[0]);
-
-    if (xkb_leds[i]) {
-      gchar *fColor = getHexColor(kbdledsplugin->foreground_color);
-      gchar *bColor = getHexColor(kbdledsplugin->background_color);
-
-      tooltip_labels[i] = g_strdup_printf(template_on, bColor, fColor, toupper(short_lock_names[i]));
-
-      g_free(bColor);
-      g_free(fColor);
+    if (visible[i]) {
+      tooltip_labels[tooltip_count] = g_strdup_printf("%s : %s", lock_names[i], xkb_leds[i] ? on_off[1] : on_off[0]);
+      tooltip_count++;
+      if (xkb_leds[i]) {
+        led_labels[i] = g_strdup_printf(template_on, bColor, fColor, toupper(short_lock_names[i]));
+      } else {
+        led_labels[i] = g_strdup_printf(template_off, short_lock_names[i]);
+      }
     } else {
-      tooltip_labels[i] = g_strdup_printf(template_off, short_lock_names[i]);
+      led_labels[i] = g_strdup("");
     }
   }
   led_labels[NUM_LEDS] = NULL;
-  tooltip_labels[NUM_LEDS] = NULL;
+  tooltip_labels[tooltip_count] = NULL;
 
-  tooltip_str = g_strjoinv("\n", led_labels);
-  label_str = g_strjoinv(NULL, tooltip_labels);
+  tooltip_str = g_strjoinv("\n", tooltip_labels);
+  label_str = g_strjoinv(NULL, led_labels);
 
   gtk_label_set_markup((GtkLabel*)kbdledsplugin->label, label_str);
   gtk_widget_set_tooltip_text(kbdledsplugin->label, tooltip_str);
 
   for(i = 0; i < NUM_LEDS; i++) {
     g_free(led_labels[i]);
-    g_free(tooltip_labels[i]);
+    if (i < tooltip_count) {
+      g_free(tooltip_labels[i]);
+    }
   }
 
   g_free(tooltip_str);
   g_free(label_str);
+  g_free(bColor);
+  g_free(fColor);
 }
 
 static void
