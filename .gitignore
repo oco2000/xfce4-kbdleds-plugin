@@ -14,6 +14,7 @@ Makefile.in
 autom4te.cache/*
 config.guess
 config.h
+config.h.in
 config.status
 config.sub
 config.log
@@ -37,9 +38,10 @@ panel-plugin/*.la
 panel-plugin/*.lo
 po/.intltool-merge-cache
 po/POTFILES
+po/Makefile.in.in
+po/stamp-*
+po/*.lock
 *.anjuta
 m4
 stamp-*
-po/stamp-*
-po/*.lock
 ChangeLog

@@ -1,6 +1,6 @@
 /*  xfce4-kbdleds-plugin - panel plugin for keyboard LEDs
  *
- *  Copyright (c) 2011-2021 OCo <oco2000@gmail.com>
+ *  Copyright (c) 2011-2024 OCo <oco2000@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 #include <gdk/gdkx.h>
 
 #include <xkbleds.h>
+#include <kbdleds.h>
 
 int xkb_leds[NUM_LEDS] = {0,0,0};
 int xkb_state = -1;
@@ -37,6 +38,10 @@ char short_lock_names[NUM_LEDS] = "cns";
 
 int i;
 int masks[NUM_LEDS]; /* NUM, CAPS, SCROLL: indicator mask, for XKB*/
+
+void xkbleds_get_initial_state(Display *d);
+GdkFilterReturn kbd_msg_filter_func(GdkXEvent *xevent, GdkEvent *event, gpointer data);
+
 
 void xkbleds_get_initial_state(Display *d) {
 
@@ -77,13 +82,11 @@ GdkFilterReturn kbd_msg_filter_func(GdkXEvent *xevent, GdkEvent *event, gpointer
 }
 
 // 0 - Success
-int xkbleds_init()
+int xkbleds_init(void)
 {
-  KeyCode keys[NUM_LEDS];
   XkbDescPtr xkb;
   char *ind_name = NULL;
   int j, mask;
-  int idx[NUM_LEDS];/* NUM, CAPS, SCROLL: indicator index, for XKB */
   GdkDisplay *disp;
   Display *d;
   int opcode = 0, errorBase = 0, major = XkbMajorVersion, minor = XkbMinorVersion;
@@ -103,10 +106,6 @@ int xkbleds_init()
     return 1;
   }
 
-// get keycodes
-  for (i = 0; i < NUM_LEDS; i++) {
-    keys[i] = XKeysymToKeycode(d, key_syms[i]);
-  }
 // get the keyboard
   xkb = XkbAllocKeyboard();
   if (!xkb) {
@@ -126,7 +125,6 @@ int xkbleds_init()
       if (ind_name && !strcmp(lock_names[j], ind_name)){
         if (XkbGetNamedIndicator(d, xkb->names->indicators[i], &mask, NULL, NULL, NULL) == True) {
           masks[j] = 1 << mask;
-          idx[j] = mask;
         } else {
           XkbFreeKeyboard(xkb, 0, True);
           return 1;
@@ -147,7 +145,7 @@ int xkbleds_init()
   return 0;
 }
 
-void xkbleds_finish()
+void xkbleds_finish(void)
 {
   gdk_window_remove_filter(NULL, kbd_msg_filter_func, NULL);
 }

@@ -1,6 +1,6 @@
 /*  xfce4-kbdleds-plugin - panel plugin for keyboard LEDs
  *
- *  Copyright (c) 2011-2021 OCo <oco2000@gmail.com>
+ *  Copyright (c) 2011-2024 OCo <oco2000@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@
 static void
 kbdleds_configure_response (GtkWidget    *dialog,
                            gint          response,
-                           kbdledsPlugin *kbdleds)
+                           KbdledsPlugin *kbdleds)
 {
   gboolean result;
 
@@ -64,14 +64,14 @@ kbdleds_configure_response (GtkWidget    *dialog,
     }
 }
 
-static void change_foreground_color(GtkWidget *button, kbdledsPlugin *kbdleds)
+static void change_foreground_color(GtkWidget *button, KbdledsPlugin *kbdleds)
 {
   gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(button), &kbdleds->foreground_color);
   kbdleds_save (kbdleds->plugin, kbdleds);
   refresh();
 }
 
-static void change_background_color(GtkWidget *button, kbdledsPlugin *kbdleds)
+static void change_background_color(GtkWidget *button, KbdledsPlugin *kbdleds)
 {
   gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(button), &kbdleds->background_color);
   kbdleds_save (kbdleds->plugin, kbdleds);
@@ -80,7 +80,7 @@ static void change_background_color(GtkWidget *button, kbdledsPlugin *kbdleds)
 
 void
 kbdleds_configure (XfcePanelPlugin *plugin,
-                  kbdledsPlugin    *kbdleds)
+                  KbdledsPlugin    *kbdleds)
 {
   GtkWidget *dialog;
 
@@ -182,7 +182,7 @@ kbdleds_about (XfcePanelPlugin *plugin)
                          "program-name", PACKAGE_NAME,
                          "comments",     _("Kbdleds Plugin"),
                          "website",      PLUGIN_WEBSITE,
-                         "copyright",    "Copyright \xc2\xa9 2011-2021 OCo\n",
+                         "copyright",    "Copyright \xc2\xa9 2011-2024 OCo\n",
                          "authors",      auth,
                          NULL);
 

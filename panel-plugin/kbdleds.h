@@ -1,6 +1,6 @@
 /*  xfce4-kbdleds-plugin - panel plugin for keyboard LEDs
  *
- *  Copyright (c) 2011-2021 OCo <oco2000@gmail.com>
+ *  Copyright (c) 2011-2024 OCo <oco2000@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,6 +20,11 @@
 #ifndef __KBDLEDS_H__
 #define __KBDLEDS_H__
 
+#include <gtk/gtk.h>
+#include <libxfce4util/libxfce4util.h>
+#include <libxfce4panel/libxfce4panel.h>
+#include <X11/XKBlib.h>
+
 G_BEGIN_DECLS
 
 /* plugin structure */
@@ -36,15 +41,15 @@ typedef struct
     GdkRGBA          foreground_color;
     GdkRGBA          background_color;
 }
-kbdledsPlugin;
+KbdledsPlugin;
 
 /* default settings */
-static gchar* DEFAULT_FOREGROUND_COLOR = "#000000";
-static gchar* DEFAULT_BACKGROUND_COLOR = "#00FF00";
+#define DEFAULT_FOREGROUND_COLOR "#000000"
+#define DEFAULT_BACKGROUND_COLOR "#00FF00"
 
 void
 kbdleds_save (XfcePanelPlugin *plugin,
-             kbdledsPlugin    *kbdleds);
+             KbdledsPlugin    *kbdleds);
 
 void show_error(gchar *message);
 

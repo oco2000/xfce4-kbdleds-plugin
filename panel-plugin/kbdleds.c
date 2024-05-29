@@ -1,6 +1,6 @@
 /*  xfce4-kbdleds-plugin - panel plugin for keyboard LEDs
  *
- *  Copyright (c) 2011-2021 OCo <oco2000@gmail.com>
+ *  Copyright (c) 2011-2024 OCo <oco2000@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,39 +26,22 @@
 
 #include <ctype.h>
 
-#include <gtk/gtk.h>
-#include <libxfce4util/libxfce4util.h>
-#include <libxfce4panel/libxfce4panel.h>
-#include <X11/XKBlib.h>
-
 #include "kbdleds.h"
 #include "kbdleds-dialogs.h"
 #include "xkbleds.h"
 
-kbdledsPlugin *kbdleds;
+KbdledsPlugin *kbdledsplugin;
 
 /* prototypes */
-static void
-kbdleds_construct (XfcePanelPlugin *plugin);
+static void kbdleds_construct (XfcePanelPlugin *plugin);
+gchar* getHexColor(GdkRGBA rgba);
 
 /* register the plugin */
 XFCE_PANEL_PLUGIN_REGISTER (kbdleds_construct);
 
-void show_error(gchar *message) {
-  GtkDialogFlags flags = GTK_DIALOG_DESTROY_WITH_PARENT;
-  GtkWidget *dialog = gtk_message_dialog_new (NULL,
-                                   flags,
-                                   GTK_MESSAGE_ERROR,
-                                   GTK_BUTTONS_CLOSE,
-                                   "%s",
-                                   message);
-  gtk_dialog_run (GTK_DIALOG (dialog));
-  gtk_widget_destroy (dialog);
-}
-
 void
 kbdleds_save (XfcePanelPlugin *plugin,
-             kbdledsPlugin    *kbdleds)
+             KbdledsPlugin    *kbdleds)
 {
   XfceRc *rc;
   gchar  *file;
@@ -86,7 +69,7 @@ kbdleds_save (XfcePanelPlugin *plugin,
 }
 
 static void
-kbdleds_read (kbdledsPlugin *kbdleds)
+kbdleds_read (KbdledsPlugin *kbdleds)
 {
   XfceRc      *rc;
   gchar       *file;
@@ -131,15 +114,14 @@ kbdleds_read (kbdledsPlugin *kbdleds)
   gdk_rgba_parse(&kbdleds->background_color, DEFAULT_BACKGROUND_COLOR);
 }
 
-static kbdledsPlugin *
+static KbdledsPlugin *
 kbdleds_new (XfcePanelPlugin *plugin)
 {
-  kbdledsPlugin   *kbdleds;
+  KbdledsPlugin   *kbdleds;
   GtkOrientation  orientation;
-  GtkWidget      *label;
 
   /* allocate memory for the plugin structure */
-  kbdleds = g_slice_new0 (kbdledsPlugin);
+  kbdleds = g_slice_new0 (KbdledsPlugin);
 
   /* pointer to plugin */
   kbdleds->plugin = plugin;
@@ -169,7 +151,7 @@ kbdleds_new (XfcePanelPlugin *plugin)
 
 static void
 kbdleds_free (XfcePanelPlugin *plugin,
-             kbdledsPlugin    *kbdleds)
+             KbdledsPlugin    *kbdleds)
 {
   GtkWidget *dialog;
 
@@ -189,14 +171,14 @@ kbdleds_free (XfcePanelPlugin *plugin,
   xkbleds_finish();
 
   /* free the plugin structure */
-  g_slice_free (kbdledsPlugin, kbdleds);
+  g_slice_free (KbdledsPlugin, kbdleds);
 
 }
 
 static void
 kbdleds_orientation_changed (XfcePanelPlugin *plugin,
                             GtkOrientation   orientation,
-                            kbdledsPlugin    *kbdleds)
+                            KbdledsPlugin    *kbdleds)
 {
   /* change the orienation of the box */
   gtk_orientable_set_orientation(GTK_ORIENTABLE(kbdleds->hvbox), orientation);
@@ -205,7 +187,7 @@ kbdleds_orientation_changed (XfcePanelPlugin *plugin,
 static gboolean
 kbdleds_size_changed (XfcePanelPlugin *plugin,
                      gint             size,
-                     kbdledsPlugin    *kbdleds)
+                     KbdledsPlugin    *kbdleds)
 {
   GtkOrientation orientation;
 
@@ -226,9 +208,8 @@ gchar* getHexColor(GdkRGBA rgba) {
   return g_strdup_printf("#%02X%02X%02X", (int)(rgba.red*255), (int)(rgba.green*255), (int)(rgba.blue*255));
 }
 
-void refresh() {
+void refresh(void) {
   int i;
-  gchar *str;
   gchar *template_on="<span background=\"%s\" foreground=\"%s\">%c</span>";
   gchar *template_off="%c";
   gchar *led_labels[NUM_LEDS + 1];
@@ -241,8 +222,8 @@ void refresh() {
     led_labels[i] = g_strdup_printf("%s : %s", lock_names[i], xkb_leds[i] ? on_off[1] : on_off[0]);
 
     if (xkb_leds[i]) {
-      gchar *fColor = getHexColor(kbdleds->foreground_color);
-      gchar *bColor = getHexColor(kbdleds->background_color);
+      gchar *fColor = getHexColor(kbdledsplugin->foreground_color);
+      gchar *bColor = getHexColor(kbdledsplugin->background_color);
 
       tooltip_labels[i] = g_strdup_printf(template_on, bColor, fColor, toupper(short_lock_names[i]));
 
@@ -258,8 +239,8 @@ void refresh() {
   tooltip_str = g_strjoinv("\n", led_labels);
   label_str = g_strjoinv(NULL, tooltip_labels);
 
-  gtk_label_set_markup((GtkLabel*)kbdleds->label, label_str);
-  gtk_widget_set_tooltip_text(kbdleds->label, tooltip_str);
+  gtk_label_set_markup((GtkLabel*)kbdledsplugin->label, label_str);
+  gtk_widget_set_tooltip_text(kbdledsplugin->label, tooltip_str);
 
   for(i = 0; i < NUM_LEDS; i++) {
     g_free(led_labels[i]);
@@ -278,31 +259,31 @@ kbdleds_construct (XfcePanelPlugin *plugin)
   xfce_textdomain(GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR, "UTF-8");
 
   /* create the plugin */
-  kbdleds = kbdleds_new (plugin);
+  kbdledsplugin = kbdleds_new (plugin);
 
   /* add the ebox to the panel */
-  gtk_container_add (GTK_CONTAINER (plugin), kbdleds->ebox);
+  gtk_container_add (GTK_CONTAINER (plugin), kbdledsplugin->ebox);
 
   /* show the panel's right-click menu on this ebox */
-  xfce_panel_plugin_add_action_widget (plugin, kbdleds->ebox);
+  xfce_panel_plugin_add_action_widget (plugin, kbdledsplugin->ebox);
 
   /* connect plugin signals */
   g_signal_connect (G_OBJECT (plugin), "free-data",
-                    G_CALLBACK (kbdleds_free), kbdleds);
+                    G_CALLBACK (kbdleds_free), kbdledsplugin);
 
   g_signal_connect (G_OBJECT (plugin), "save",
-                    G_CALLBACK (kbdleds_save), kbdleds);
+                    G_CALLBACK (kbdleds_save), kbdledsplugin);
 
   g_signal_connect (G_OBJECT (plugin), "size-changed",
-                    G_CALLBACK (kbdleds_size_changed), kbdleds);
+                    G_CALLBACK (kbdleds_size_changed), kbdledsplugin);
 
   g_signal_connect (G_OBJECT (plugin), "orientation-changed",
-                    G_CALLBACK (kbdleds_orientation_changed), kbdleds);
+                    G_CALLBACK (kbdleds_orientation_changed), kbdledsplugin);
 
   /* show the configure menu item and connect signal */
   xfce_panel_plugin_menu_show_configure (plugin);
   g_signal_connect (G_OBJECT (plugin), "configure-plugin",
-                    G_CALLBACK (kbdleds_configure), kbdleds);
+                    G_CALLBACK (kbdleds_configure), kbdledsplugin);
 
   /* show the about menu item and connect signal */
   xfce_panel_plugin_menu_show_about (plugin);
