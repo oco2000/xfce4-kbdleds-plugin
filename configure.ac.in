@@ -60,7 +60,7 @@ AC_CHECK_FUNCS([bind_textdomain_codeset])
 dnl ******************************
 dnl *** Check for i18n support ***
 dnl ******************************
-XDT_I18N([ru uk])
+XDT_I18N([ru uk fr])
 
 dnl *******************************
 dnl *** Check for X11 installed ***
