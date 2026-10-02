@@ -21,7 +21,7 @@ Then run
 sudo make install
 ```
 
-On some distros you need to specify plugin directories by yourself like this
+**On some distros (Debian 13, Mint, Manjaro) you need to specify plugin directories by yourself like this**
 ```
 ./configure --prefix=/usr --libdir=/usr/lib/x86_64-linux-gnu
 ```
