@@ -5,6 +5,7 @@ This is a keyboard leds plugin (based on sample plugin) for the Xfce panel.
 
 ![Screenshot](xfce4-kbdleds-plugin-screenshot.png)
 
+![Preferences - Screenshot](xfce4-kbdleds-plugin-screenshot-preferences.png)
 
 Installation
 ============
